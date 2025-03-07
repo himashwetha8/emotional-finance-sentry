@@ -104,7 +104,7 @@ export const mockInsights: FinancialInsight[] = [
   {
     id: 'insight3',
     title: 'Budget Alert',
-    description: 'You're approaching your entertainment budget limit. Consider more cost-effective activities for the rest of the month.',
+    description: 'You\'re approaching your entertainment budget limit. Consider more cost-effective activities for the rest of the month.',
     emotionRelated: false,
     impactLevel: 'medium',
     date: new Date(2023, 8, 28),
