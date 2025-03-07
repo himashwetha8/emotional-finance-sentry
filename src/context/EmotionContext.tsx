@@ -1,7 +1,13 @@
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-export type Emotion = 'happy' | 'sad' | 'angry' | 'anxious' | 'neutral';
+// Expanded and more well-defined emotion types
+export type Emotion = 'happy' | 'sad' | 'angry' | 'anxious' | 'neutral' | 'excited' | 'confident' | 'frustrated' | 'overwhelmed' | 'content';
+
+// Emotion categories for financial decisions
+export const RISKY_EMOTIONS: Emotion[] = ['excited', 'angry', 'frustrated', 'overwhelmed'];
+export const CAUTIOUS_EMOTIONS: Emotion[] = ['anxious', 'sad'];
+export const BALANCED_EMOTIONS: Emotion[] = ['neutral', 'content', 'confident', 'happy'];
 
 export interface EmotionState {
   currentEmotion: Emotion;
@@ -15,6 +21,9 @@ interface EmotionContextType {
   setCurrentEmotion: (emotion: Emotion, confidence: number) => void;
   toggleEmotionDetection: () => void;
   resetEmotionHistory: () => void;
+  isRiskyEmotion: (emotion: Emotion) => boolean;
+  isCautiousEmotion: (emotion: Emotion) => boolean;
+  isBalancedEmotion: (emotion: Emotion) => boolean;
 }
 
 const initialEmotionState: EmotionState = {
@@ -63,6 +72,19 @@ export const EmotionProvider: React.FC<{ children: ReactNode }> = ({ children })
     }));
   };
 
+  // Helper functions to categorize emotions for financial decisions
+  const isRiskyEmotion = (emotion: Emotion): boolean => {
+    return RISKY_EMOTIONS.includes(emotion);
+  };
+
+  const isCautiousEmotion = (emotion: Emotion): boolean => {
+    return CAUTIOUS_EMOTIONS.includes(emotion);
+  };
+
+  const isBalancedEmotion = (emotion: Emotion): boolean => {
+    return BALANCED_EMOTIONS.includes(emotion);
+  };
+
   return (
     <EmotionContext.Provider
       value={{
@@ -70,6 +92,9 @@ export const EmotionProvider: React.FC<{ children: ReactNode }> = ({ children })
         setCurrentEmotion,
         toggleEmotionDetection,
         resetEmotionHistory,
+        isRiskyEmotion,
+        isCautiousEmotion,
+        isBalancedEmotion,
       }}
     >
       {children}

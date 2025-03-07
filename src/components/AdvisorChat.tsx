@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useEmotion } from '../context/EmotionContext';
-import { getEmotionIcon } from '../utils/emotionUtils';
+import { getEmotionIcon, getFinancialAdviceForEmotion } from '../utils/emotionUtils';
 import { mockChatMessages } from '../data/mockData';
 
 interface Message {
@@ -12,10 +12,16 @@ interface Message {
 }
 
 const AdvisorChat: React.FC = () => {
-  const { emotionState } = useEmotion();
+  const { emotionState, isRiskyEmotion, isCautiousEmotion } = useEmotion();
   const { currentEmotion } = emotionState;
   
-  const [messages, setMessages] = useState<Message[]>(mockChatMessages);
+  // Ensure mockChatMessages is properly typed with 'user' | 'ai' for sender
+  const [messages, setMessages] = useState<Message[]>(
+    mockChatMessages.map(msg => ({
+      ...msg,
+      sender: msg.sender as 'user' | 'ai'
+    }))
+  );
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
@@ -65,18 +71,18 @@ const AdvisorChat: React.FC = () => {
     const lowerCaseMessage = userMessage.toLowerCase();
     
     if (lowerCaseMessage.includes('invest') || lowerCaseMessage.includes('stock')) {
-      return `I notice you're feeling ${emotion} today. Based on your emotional state, now might ${emotion === 'anxious' || emotion === 'sad' ? 'not be' : 'be'} a good time to make investment decisions. ${getEmotionIcon(emotion)} ${emotion === 'anxious' ? 'Consider waiting until you feel more balanced, or focus on lower-risk investments for now.' : ''}`;
+      return `I notice you're feeling ${emotion} today. Based on your emotional state, now might ${isRiskyEmotion(emotion as any) || isCautiousEmotion(emotion as any) ? 'not be' : 'be'} a good time to make investment decisions. ${getEmotionIcon(emotion as any)} ${emotion === 'anxious' ? 'Consider waiting until you feel more balanced, or focus on lower-risk investments for now.' : ''}`;
     }
     
     if (lowerCaseMessage.includes('spend') || lowerCaseMessage.includes('buy') || lowerCaseMessage.includes('purchase')) {
-      return `Before making a purchase, I'd like to note that you're feeling ${emotion} today. ${getEmotionIcon(emotion)} People often make ${emotion === 'happy' || emotion === 'excited' ? 'impulsive purchases when excited' : 'comfort purchases when feeling down'}. Would you like to set a 24-hour waiting period for this purchase?`;
+      return `Before making a purchase, I'd like to note that you're feeling ${emotion} today. ${getEmotionIcon(emotion as any)} People often make ${emotion === 'happy' || emotion === 'excited' ? 'impulsive purchases when excited' : 'comfort purchases when feeling down'}. Would you like to set a 24-hour waiting period for this purchase?`;
     }
     
     if (lowerCaseMessage.includes('save') || lowerCaseMessage.includes('budget')) {
-      return `That's a great topic to discuss! Your emotional state (${emotion}) ${getEmotionIcon(emotion)} is actually ideal for planning and budgeting. Based on your recent spending patterns, I recommend setting aside 15% of your income for savings. Would you like me to suggest a detailed savings plan?`;
+      return `That's a great topic to discuss! Your emotional state (${emotion}) ${getEmotionIcon(emotion as any)} is actually ideal for planning and budgeting. Based on your recent spending patterns, I recommend setting aside 15% of your income for savings. Would you like me to suggest a detailed savings plan?`;
     }
     
-    return `Thanks for your message. I notice you're feeling ${emotion} today ${getEmotionIcon(emotion)}. How can I help you with your financial decisions while taking your current emotional state into account?`;
+    return `Thanks for your message. I notice you're feeling ${emotion} today ${getEmotionIcon(emotion as any)}. ${getFinancialAdviceForEmotion(emotion as any)} How can I help you with your financial decisions today?`;
   };
 
   return (
