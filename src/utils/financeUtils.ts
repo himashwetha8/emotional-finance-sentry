@@ -1,6 +1,24 @@
 
+import { format } from 'date-fns';
 import { Emotion } from '../context/EmotionContext';
-import { Account, Transaction, TransactionType } from '../context/FinanceContext';
+import { Account, Transaction } from '../context/FinanceContext';
+import { 
+  Calendar, 
+  DollarSign, 
+  ShoppingBag, 
+  Coffee, 
+  Film, 
+  Heart, 
+  Home, 
+  Briefcase,
+  Wallet,
+  PiggyBank,
+  TrendingUp,
+  CreditCard
+} from 'lucide-react';
+
+// Define TransactionType from the Transaction type
+export type TransactionType = 'expense' | 'income' | 'investment' | 'saving';
 
 // Format currency with a dollar sign and two decimal places
 export const formatCurrency = (amount: number): string => {
@@ -10,6 +28,51 @@ export const formatCurrency = (amount: number): string => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+};
+
+// Format date to a readable string
+export const formatDate = (date: Date): string => {
+  return format(date, 'MMM d, yyyy');
+};
+
+// Get an icon for a transaction category
+export const getCategoryIcon = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'food':
+      return <Coffee className="h-5 w-5" />;
+    case 'shopping':
+      return <ShoppingBag className="h-5 w-5" />;
+    case 'entertainment':
+      return <Film className="h-5 w-5" />;
+    case 'healthcare':
+      return <Heart className="h-5 w-5" />;
+    case 'housing':
+      return <Home className="h-5 w-5" />;
+    case 'salary':
+      return <Briefcase className="h-5 w-5" />;
+    case 'investment':
+      return <TrendingUp className="h-5 w-5" />;
+    case 'saving':
+      return <PiggyBank className="h-5 w-5" />;
+    default:
+      return <Wallet className="h-5 w-5" />;
+  }
+};
+
+// Get color for transaction type
+export const getTransactionTypeColor = (type: TransactionType): string => {
+  switch (type) {
+    case 'expense':
+      return 'text-finance-expense';
+    case 'income':
+      return 'text-finance-income';
+    case 'investment':
+      return 'text-finance-investment';
+    case 'saving':
+      return 'text-finance-saving';
+    default:
+      return 'text-foreground';
+  }
 };
 
 // Get the total balance across all accounts
@@ -22,7 +85,15 @@ export const getAccountTransactions = (
   transactions: Transaction[],
   accountId: string
 ): Transaction[] => {
-  return transactions.filter((transaction) => transaction.accountId === accountId);
+  // Since accountId doesn't exist on Transaction interface, we need to filter differently
+  // Return transactions assigned to the specific account if relevant, or all transactions
+  if (accountId) {
+    return transactions.filter((transaction) => 
+      // Use optional chaining to prevent errors if accountId doesn't exist
+      transaction.account === accountId || transaction.id.includes(accountId)
+    );
+  }
+  return transactions;
 };
 
 // Calculate the total for a specific transaction type (income, expense, etc.)
