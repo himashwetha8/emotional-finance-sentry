@@ -39,23 +39,23 @@ export const formatDate = (date: Date): string => {
 export const getCategoryIcon = (category: string) => {
   switch (category.toLowerCase()) {
     case 'food':
-      return <Coffee className="h-5 w-5" />;
+      return Coffee;
     case 'shopping':
-      return <ShoppingBag className="h-5 w-5" />;
+      return ShoppingBag;
     case 'entertainment':
-      return <Film className="h-5 w-5" />;
+      return Film;
     case 'healthcare':
-      return <Heart className="h-5 w-5" />;
+      return Heart;
     case 'housing':
-      return <Home className="h-5 w-5" />;
+      return Home;
     case 'salary':
-      return <Briefcase className="h-5 w-5" />;
+      return Briefcase;
     case 'investment':
-      return <TrendingUp className="h-5 w-5" />;
+      return TrendingUp;
     case 'saving':
-      return <PiggyBank className="h-5 w-5" />;
+      return PiggyBank;
     default:
-      return <Wallet className="h-5 w-5" />;
+      return Wallet;
   }
 };
 

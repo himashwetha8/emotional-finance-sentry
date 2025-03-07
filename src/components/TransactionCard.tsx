@@ -22,6 +22,9 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, isPendin
     rejectPendingTransaction(id);
   };
 
+  // Get the icon component for the category
+  const IconComponent = getCategoryIcon(category);
+
   return (
     <div className={`relative bg-secondary/40 rounded-lg p-4 hover:bg-secondary/60 transition-colors ${
       isPending ? 'border border-primary/30' : ''
@@ -29,7 +32,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, isPendin
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
-            {getCategoryIcon(category)}
+            <IconComponent className="h-5 w-5" />
           </div>
           <div>
             <div className="font-medium">{description}</div>
