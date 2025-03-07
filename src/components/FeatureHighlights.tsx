@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   BarChart3, 
@@ -10,29 +11,31 @@ import {
   Globe, 
   MessageSquare, 
   Mic, 
-  BookOpen,
-  LucideIcon
+  BookOpen
 } from 'lucide-react';
 
 interface FeatureCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
+  link: string;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon }) => {
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon, link }) => {
   return (
-    <Card className="glass-card h-full transition-all duration-300 hover:shadow-lg hover:border-primary/20">
-      <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <div className="text-primary">{icon}</div>
-          <CardTitle className="text-lg">{title}</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-sm text-muted-foreground">{description}</CardDescription>
-      </CardContent>
-    </Card>
+    <Link to={link}>
+      <Card className="glass-card h-full transition-all duration-300 hover:shadow-lg hover:border-primary/20 cursor-pointer">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <div className="text-primary">{icon}</div>
+            <CardTitle className="text-lg">{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <CardDescription className="text-sm text-muted-foreground">{description}</CardDescription>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
@@ -41,47 +44,56 @@ const FeatureHighlights: React.FC = () => {
     {
       title: "Expense Tracking",
       description: "Automatically categorize and track all your expenses in real-time with AI-driven insights.",
-      icon: <BarChart3 />
+      icon: <BarChart3 />,
+      link: "/expense-tracking"
     },
     {
       title: "Emotion-Based Insights",
       description: "Make better financial decisions by understanding how your emotions impact your spending habits.",
-      icon: <Brain />
+      icon: <Brain />,
+      link: "/emotion-insights"
     },
     {
       title: "Stock Market Predictions",
       description: "Get AI-powered market analysis and personalized investment suggestions.",
-      icon: <TrendingUp />
+      icon: <TrendingUp />,
+      link: "/stock-market"
     },
     {
       title: "Debt Management",
       description: "Strategic plans to help you reduce debt faster and save on interest payments.",
-      icon: <CreditCard />
+      icon: <CreditCard />,
+      link: "/debt-management"
     },
     {
       title: "Smart Savings",
       description: "Automated saving strategies tailored to your financial goals and emotional patterns.",
-      icon: <PiggyBank />
+      icon: <PiggyBank />,
+      link: "/smart-savings"
     },
     {
       title: "Community Funding",
       description: "Support social causes and community initiatives through our crowdfunding feature.",
-      icon: <Globe />
+      icon: <Globe />,
+      link: "/community-funding"
     },
     {
       title: "Multilingual Support",
       description: "Access financial advice in multiple languages for greater accessibility.",
-      icon: <MessageSquare />
+      icon: <MessageSquare />,
+      link: "/multilingual-support"
     },
     {
       title: "Voice-Based Input",
       description: "Simply speak to add transactions, check balances, or get financial advice.",
-      icon: <Mic />
+      icon: <Mic />,
+      link: "/voice-input"
     },
     {
       title: "Financial Education",
       description: "Personalized lessons and tips to improve your financial literacy over time.",
-      icon: <BookOpen />
+      icon: <BookOpen />,
+      link: "/financial-education"
     }
   ];
 
@@ -101,6 +113,7 @@ const FeatureHighlights: React.FC = () => {
             title={feature.title}
             description={feature.description}
             icon={feature.icon}
+            link={feature.link}
           />
         ))}
       </div>

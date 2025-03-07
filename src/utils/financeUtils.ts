@@ -1,3 +1,4 @@
+
 import { format } from 'date-fns';
 import { Emotion } from '../context/EmotionContext';
 import { Account, Transaction } from '../context/FinanceContext';
@@ -142,7 +143,9 @@ export const getSpendingByEmotion = (
     .filter((transaction) => transaction.type === 'expense')
     .forEach((transaction) => {
       const { emotion, amount } = transaction;
-      emotions[emotion] = (emotions[emotion] || 0) + amount;
+      if (emotion) {
+        emotions[emotion] = (emotions[emotion] || 0) + amount;
+      }
     });
   
   return emotions;
@@ -158,7 +161,7 @@ export const isImpulsePurchase = (
   if (type !== 'expense') return false;
   
   const impulsiveEmotions: Emotion[] = ['sad', 'angry', 'excited', 'overwhelmed'];
-  const isImpulsiveEmotion = impulsiveEmotions.includes(emotion);
+  const isImpulsiveEmotion = emotion ? impulsiveEmotions.includes(emotion) : false;
   const isHigherThanAvg = amount > userAvgSpending * 1.5;
   
   return isImpulsiveEmotion && isHigherThanAvg;
