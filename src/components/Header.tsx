@@ -2,6 +2,7 @@
 import React from 'react';
 import { useEmotion } from '../context/EmotionContext';
 import { getEmotionIcon, getEmotionLabel, getEmotionColor } from '../utils/emotionUtils';
+import { Brain } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { emotionState, toggleEmotionDetection } = useEmotion();
@@ -10,9 +11,10 @@ const Header: React.FC = () => {
   return (
     <header className="glass sticky top-0 z-10 w-full py-4 px-6 mb-8 flex items-center justify-between">
       <div className="flex items-center">
-        <div className="text-primary font-bold text-2xl mr-2">FinSage</div>
+        <Brain className="text-primary mr-2 h-6 w-6" />
+        <div className="text-primary font-bold text-2xl mr-2">FinAI</div>
         <div className="text-primary-foreground/70 text-sm italic">
-          AI-Powered Emotional Finance
+          Smart, Simple, Secure!
         </div>
       </div>
       

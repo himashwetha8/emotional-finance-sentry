@@ -1,148 +1,111 @@
 
-import { Transaction, Budget, Account, FinancialInsight } from '../context/FinanceContext';
 import { Emotion } from '../context/EmotionContext';
+import { Account, Transaction, TransactionType } from '../context/FinanceContext';
 
+// Format currency with a dollar sign and two decimal places
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
-export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
+// Get the total balance across all accounts
+export const getTotalBalance = (accounts: Account[]): number => {
+  return accounts.reduce((total, account) => total + account.balance, 0);
 };
 
-export const getCategoryIcon = (category: string): string => {
-  const icons: Record<string, string> = {
-    'Food': '🍔',
-    'Groceries': '🛒',
-    'Shopping': '🛍️',
-    'Entertainment': '🎬',
-    'Travel': '✈️',
-    'Transport': '🚗',
-    'Housing': '🏠',
-    'Utilities': '💡',
-    'Healthcare': '⚕️',
-    'Education': '📚',
-    'Fitness': '💪',
-    'Technology': '💻',
-    'Clothing': '👕',
-    'Gifts': '🎁',
-    'Investments': '📈',
-    'Salary': '💰',
-    'Freelance': '💼',
-    'Savings': '🏦',
-  };
-
-  return icons[category] || '💼';
+// Get transactions for a specific account
+export const getAccountTransactions = (
+  transactions: Transaction[],
+  accountId: string
+): Transaction[] => {
+  return transactions.filter((transaction) => transaction.accountId === accountId);
 };
 
-export const getTransactionTypeColor = (type: Transaction['type']): string => {
-  switch (type) {
-    case 'expense':
-      return 'text-finance-expense';
-    case 'income':
-      return 'text-finance-income';
-    case 'investment':
-      return 'text-finance-investment';
-    case 'saving':
-      return 'text-finance-saving';
-    default:
-      return 'text-foreground';
-  }
+// Calculate the total for a specific transaction type (income, expense, etc.)
+export const getTotalByType = (
+  transactions: Transaction[],
+  type: TransactionType
+): number => {
+  return transactions
+    .filter((transaction) => transaction.type === type)
+    .reduce((total, transaction) => total + transaction.amount, 0);
 };
 
+// Calculate spending by category
+export const getSpendingByCategory = (
+  transactions: Transaction[]
+): Record<string, number> => {
+  const categories: Record<string, number> = {};
+  
+  transactions
+    .filter((transaction) => transaction.type === 'expense')
+    .forEach((transaction) => {
+      const { category, amount } = transaction;
+      categories[category] = (categories[category] || 0) + amount;
+    });
+  
+  return categories;
+};
+
+// Calculate spending by emotion
 export const getSpendingByEmotion = (
   transactions: Transaction[]
 ): Record<Emotion, number> => {
-  const spendingByEmotion: Record<Emotion, number> = {
+  const emotions: Record<Emotion, number> = {
     happy: 0,
     sad: 0,
     angry: 0,
     anxious: 0,
     neutral: 0,
+    excited: 0,
+    confident: 0,
+    frustrated: 0,
+    overwhelmed: 0,
+    content: 0
   };
-
-  transactions.forEach((transaction) => {
-    if (transaction.type === 'expense' && transaction.emotion) {
-      spendingByEmotion[transaction.emotion] += transaction.amount;
-    }
-  });
-
-  return spendingByEmotion;
-};
-
-export const getTotalBalance = (accounts: Account[]): number => {
-  return accounts.reduce((total, account) => total + account.balance, 0);
-};
-
-export const getBudgetStatus = (
-  budget: Budget
-): 'on-track' | 'warning' | 'over-budget' => {
-  const percentage = (budget.spent / budget.limit) * 100;
   
-  if (percentage < 70) {
-    return 'on-track';
-  } else if (percentage < 100) {
-    return 'warning';
-  } else {
-    return 'over-budget';
-  }
+  transactions
+    .filter((transaction) => transaction.type === 'expense')
+    .forEach((transaction) => {
+      const { emotion, amount } = transaction;
+      emotions[emotion] = (emotions[emotion] || 0) + amount;
+    });
+  
+  return emotions;
 };
 
-export const generateInsight = (
-  transactions: Transaction[],
-  currentEmotion: Emotion
-): FinancialInsight => {
-  // This is simplified for demo purposes
-  // In a real app, this would use more sophisticated analysis
+// Determine if a transaction is an impulse purchase based on emotion and amount
+export const isImpulsePurchase = (
+  transaction: Transaction,
+  userAvgSpending: number
+): boolean => {
+  const { emotion, amount, type } = transaction;
+  
+  if (type !== 'expense') return false;
+  
+  const impulsiveEmotions: Emotion[] = ['sad', 'angry', 'excited', 'overwhelmed'];
+  const isImpulsiveEmotion = impulsiveEmotions.includes(emotion);
+  const isHigherThanAvg = amount > userAvgSpending * 1.5;
+  
+  return isImpulsiveEmotion && isHigherThanAvg;
+};
 
-  const insights = [
-    {
-      title: "Emotion-Driven Spending Detected",
-      description: "You tend to spend more on shopping when feeling sad. Consider setting spending limits for when this emotion is detected.",
-      emotionRelated: true,
-      emotion: 'sad' as Emotion,
-      impactLevel: 'medium' as const,
-    },
-    {
-      title: "Investment Opportunity",
-      description: "Based on your current financial situation and emotional state, now might be a good time to consider increasing your retirement contributions.",
-      emotionRelated: false,
-      impactLevel: 'high' as const,
-    },
-    {
-      title: "Budget Alert",
-      description: "You're approaching your entertainment budget limit for this month. Consider more cost-effective activities for the rest of the period.",
-      emotionRelated: false,
-      impactLevel: 'medium' as const,
-    },
-    {
-      title: "Emotional Spending Pattern",
-      description: "When feeling anxious, you've made several impulse purchases in the technology category. Consider implementing a 24-hour waiting period for these items.",
-      emotionRelated: true,
-      emotion: 'anxious' as Emotion,
-      impactLevel: 'high' as const,
-    },
-    {
-      title: "Saving Recommendation",
-      description: "Your current financial stability and emotional baseline suggest this is an ideal time to increase your emergency fund contributions.",
-      emotionRelated: true,
-      emotion: 'neutral' as Emotion,
-      impactLevel: 'medium' as const,
-    },
-  ];
-
-  // Select a random insight for demo purposes
-  const randomIndex = Math.floor(Math.random() * insights.length);
-  return {
-    id: `insight-${Date.now()}`,
-    date: new Date(),
-    ...insights[randomIndex],
-  };
+// Calculate average spending per transaction
+export const getAverageSpending = (transactions: Transaction[]): number => {
+  const expenses = transactions.filter(
+    (transaction) => transaction.type === 'expense'
+  );
+  
+  if (expenses.length === 0) return 0;
+  
+  const totalExpenses = expenses.reduce(
+    (total, transaction) => total + transaction.amount,
+    0
+  );
+  
+  return totalExpenses / expenses.length;
 };
