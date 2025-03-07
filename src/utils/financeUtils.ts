@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import { Emotion } from '../context/EmotionContext';
 import { Account, Transaction } from '../context/FinanceContext';
@@ -85,12 +84,12 @@ export const getAccountTransactions = (
   transactions: Transaction[],
   accountId: string
 ): Transaction[] => {
-  // Since accountId doesn't exist on Transaction interface, we need to filter differently
-  // Return transactions assigned to the specific account if relevant, or all transactions
+  // The Transaction interface doesn't have an account property, 
+  // so we'll just return transactions that match by id pattern or description
   if (accountId) {
     return transactions.filter((transaction) => 
-      // Use optional chaining to prevent errors if accountId doesn't exist
-      transaction.account === accountId || transaction.id.includes(accountId)
+      transaction.id.includes(accountId) || 
+      transaction.description.toLowerCase().includes(accountId.toLowerCase())
     );
   }
   return transactions;
